@@ -6,11 +6,14 @@ import tornado.web
 from healthcheck import HealthCheck, TornadoHandler
 from tornado.ioloop import IOLoop
 
+from trivia.handlers import *
+
 MAX_BUFFER_SIZE = 200 * 1024 * 1024  # 200MB
 PORT = 8888
 LOGGING_CONF_FILE = "logging.ini"
 
 __logger = logging.getLogger(__name__)
+
 
 def make_http_server(is_from_tests: bool):
     health = HealthCheck()
@@ -24,7 +27,12 @@ def make_http_server(is_from_tests: bool):
     __logger.info("Setup HTTP Tornado server for env: {}".format(environment))
 
     paths = [
-        (r"/healthcheck", TornadoHandler, dict(checker=health))
+        (r"/healthcheck", TornadoHandler, dict(checker=health)),
+        (r"/session/start", TriviaSessionStartHandler),
+        (r"/session/reset", TriviaSessionResetHandler),
+        (r"/session/stop", TriviaSessionStopHandler),
+        (r"/categories", TriviaCategoriesHandler),
+        (r"/questions", TriviaQuestionsHandler),
     ]
 
     if environment == "prod":

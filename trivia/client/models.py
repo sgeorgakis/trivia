@@ -1,0 +1,2 @@
+class NoActiveSessionError(Exception):
+    pass
