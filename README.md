@@ -50,6 +50,6 @@ Since Transifex's API is asynchronous, this API assumes that each request to upl
 # Notes
 
 Transifex's API did not work as expected. According to the specs of the task, uploading a new file should replace all the previous resource strings with the new ones.<br>
-I noticed, though, that the resource was left untouched. This is the reason I decided to fetch all the previous inserted resource strings, delete the resource and recreated.<br>
+I noticed, though, that the resource was left untouched. This is the reason I decided to fetch all the previous inserted resource strings, delete the resource and recreate it.<br>
 
 As the number of resource strings is growing, so will the payload and we can probably end up with a `413` status code.
