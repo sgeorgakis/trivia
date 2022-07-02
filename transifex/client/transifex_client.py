@@ -25,10 +25,16 @@ class TransifexClient(ABC):
     async def create_resource(self, resource):
         pass
 
-    async def create_resource(self, resource):
+    async def delete_resource(self, resource_id):
         pass
 
     async def upload_new_file(self, data):
+        pass
+
+    async def get_resource_strings(self, resource_id):
+        pass
+
+    async def get_cursor_resource_strings(self, path):
         pass
 
 
@@ -39,8 +45,21 @@ class MockTransifexClient(TransifexClient):
     async def create_resource(self, resource):
         return "id"
 
-    async def upload_new_file(self, data):
-        pass
+    async def get_resource_strings(self, resource_id):
+        return {
+            "attributes": {
+                "key": "question",
+                "strings": {"other": "This is a question"},
+            }
+        }, "url"
+
+    async def get_cursor_resource_strings(self, path):
+        return {
+            "attributes": {
+                "key": "question2",
+                "strings": {"other": "This is another question"},
+            }
+        }, None
 
 
 class TransifexClientImpl(TransifexClient):

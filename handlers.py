@@ -5,8 +5,6 @@ import traceback
 
 import tornado.web
 
-from transifex import transifex_service
-from trivia.client import trivia_client
 from trivia.client.models import NoActiveSessionError
 from trivia.models import TriviaQuestion
 
@@ -14,22 +12,31 @@ logger = logging.getLogger(__name__)
 
 
 class TriviaSessionStartHandler(tornado.web.RequestHandler):
+    def initialize(self, trivia_client):
+        self.__trivia_client = trivia_client
+
     async def post(self):
         logger.debug("Got request for starting session")
-        await trivia_client.start_session()
+        await self.__trivia_client.start_session()
 
 
 class TriviaSessionStopHandler(tornado.web.RequestHandler):
+    def initialize(self, trivia_client):
+        self.__trivia_client = trivia_client
+
     async def post(self):
         logger.debug("Got request for stopping session")
-        trivia_client.stop_session()
+        self.__trivia_client.stop_session()
 
 
 class TriviaSessionResetHandler(tornado.web.RequestHandler):
+    def initialize(self, trivia_client):
+        self.__trivia_client = trivia_client
+
     async def post(self):
         try:
             logger.debug("Got request for reseting session")
-            await trivia_client.reset_session()
+            await self.__trivia_client.reset_session()
         except NoActiveSessionError as e:
             logger.error("Error while reseting session: {}".format(e))
             logger.error(traceback.format_exception(*sys.exc_info()))
@@ -41,9 +48,12 @@ class TriviaSessionResetHandler(tornado.web.RequestHandler):
 
 
 class TriviaCategoriesHandler(tornado.web.RequestHandler):
+    def initialize(self, trivia_client):
+        self.__trivia_client = trivia_client
+
     async def get(self):
         logger.debug("Got request for fetching all trivia categories")
-        categories = await trivia_client.list_categories()
+        categories = await self.__trivia_client.list_categories()
         self.clear()
         self.write(json.dumps(categories))
         self.clear_header("Content-Type")
@@ -51,6 +61,10 @@ class TriviaCategoriesHandler(tornado.web.RequestHandler):
 
 
 class TriviaQuestionsHandler(tornado.web.RequestHandler):
+    def initialize(self, trivia_client, transifex_service):
+        self.__trivia_client = trivia_client
+        self.__transifex_service = transifex_service
+
     async def post(self):
         if "amount" in self.request.arguments:
             number_of_questions = int(
@@ -71,10 +85,10 @@ class TriviaQuestionsHandler(tornado.web.RequestHandler):
                 )
             )
             for category in categories:
-                questions = await trivia_client.get_questions(
+                questions = await self.__trivia_client.get_questions(
                     category, number_of_questions
                 )
                 trivia_questions = [TriviaQuestion(question) for question in questions]
-                await transifex_service.upsert_data(category, trivia_questions)
+                await self.__transifex_service.upsert_data(category, trivia_questions)
                 self.clear()
-                self.set_status(201)
+                self.set_status(202)
