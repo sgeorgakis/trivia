@@ -53,7 +53,7 @@ class MockTriviaClient(TriviaClient):
         self.__token = None
 
     async def list_categories(self):
-        return {1: "Entertainment"}
+        return [{1: "Entertainment"}]
 
     async def get_questions(self, category, number_of_questions=10):
         return [

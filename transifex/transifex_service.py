@@ -11,7 +11,7 @@ class TransifexService:
     def __init__(self, transifex_client):
         self.__transifex_client = transifex_client
 
-    async def __upsert_resource(self, category):
+    async def upsert_resource(self, category):
         resources = await self.__transifex_client.list_resources()
         logger.debug(
             "Got resources: {}. Selected category: {}".format(resources, category)
@@ -29,15 +29,15 @@ class TransifexService:
         )
 
     async def upsert_data(self, category, trivia_questions):
-        resource_id, previous_questions = await self.__upsert_resource(category)
-        transformed_trivia_questions = self.transform_questions(trivia_questions)
+        resource_id, previous_questions = await self.upsert_resource(category)
+        transformed_trivia_questions = self.__transform_questions(trivia_questions)
         transformed_trivia_questions.update(previous_questions)
         request_body = ResourceString(
             resource_id, str(json.dumps(transformed_trivia_questions))
         )
         await self.__transifex_client.upload_new_file(request_body)
 
-    def transform_questions(self, trivia_questions):
+    def __transform_questions(self, trivia_questions):
         dictionary = {}
         for question in trivia_questions:
             for i in range(len(question.incorrect_answers)):

@@ -13,18 +13,32 @@ class TestTornadoServer(AsyncHTTPTestCase):
         self.assertEqual(response.code, 200)
 
     def test_reset_session_with_empty_session(self):
-        response = self.fetch("/session/reset")
+        response = self.fetch(
+            "/session/reset", method="POST", allow_nonstandard_methods=True
+        )
         self.assertEqual(response.code, 400)
 
     def test_session_start(self):
-        response = self.fetch("/session/start")
+        response = self.fetch(
+            "/session/start", method="POST", allow_nonstandard_methods=True
+        )
         self.assertEqual(response.code, 200)
 
     def test_session_stop(self):
-        response = self.fetch("/session/stop")
+        response = self.fetch(
+            "/session/stop", method="POST", allow_nonstandard_methods=True
+        )
         self.assertEqual(response.code, 200)
 
     def test_get_categories(self):
         response = self.fetch("/categories")
         self.assertEqual(response.code, 200)
         self.assert_(isinstance(json_decode(response.body), list))
+
+    def test_insert_categories(self):
+        response = self.fetch(
+            "question?amount=10&category=9&category=10",
+            method="POST",
+            allow_nonstandard_methods=True,
+        )
+        self.assertEqual(response.code, 202)

@@ -49,7 +49,14 @@ Since Transifex's API is asynchronous, this API assumes that each request to upl
 
 # Notes
 
+## Assumptions and limitations
 Transifex's API did not work as expected. According to the specs of the task, uploading a new file should replace all the previous resource strings with the new ones.<br>
 I noticed, though, that the resource was left untouched. This is the reason I decided to fetch all the previous inserted resource strings, delete the resource and recreate it.<br>
 
 As the number of resource strings is growing, so will the payload and we can probably end up with a `413` status code.
+
+## Issues
+Although there are tests included, the ones testing the server do not work. There is an error not allowing the `app_test` file to see the `trivia.client` module.<br>
+I managed to fix it by moving every python file under a common folder and using relative paths, but then errors at startup occurred.
+Although the tests are crucial in an application, I decided to deliver a running app with limited tests and some broken rather than the opposite.<br>
+`transifex_service_test` includes only one test, but it covers most of the code in the respective class and the scenario where the resource already exists and need to be updated, so it seemed redundant to add another.

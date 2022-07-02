@@ -46,20 +46,24 @@ class MockTransifexClient(TransifexClient):
         return "id"
 
     async def get_resource_strings(self, resource_id):
-        return {
-            "attributes": {
-                "key": "question",
-                "strings": {"other": "This is a question"},
+        return [
+            {
+                "attributes": {
+                    "key": "question",
+                    "strings": {"other": "This is a question"},
+                }
             }
-        }, "url"
+        ], "url"
 
     async def get_cursor_resource_strings(self, path):
-        return {
-            "attributes": {
-                "key": "question2",
-                "strings": {"other": "This is another question"},
+        return [
+            {
+                "attributes": {
+                    "key": "question2",
+                    "strings": {"other": "This is another question"},
+                }
             }
-        }, None
+        ], None
 
 
 class TransifexClientImpl(TransifexClient):
