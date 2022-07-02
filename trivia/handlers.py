@@ -8,6 +8,7 @@ import tornado.web
 from transifex import transifex_service
 from trivia.client import trivia_client
 from trivia.client.models import NoActiveSessionError
+from trivia.models import TriviaQuestion
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,7 @@ class TriviaQuestionsHandler(tornado.web.RequestHandler):
         )
         for category in categories:
             questions = await trivia_client.get_questions(category, number_of_questions)
-            await transifex_service.upsert_data(category, questions)
+            trivia_questions = [TriviaQuestion(question) for question in questions]
+            await transifex_service.upsert_data(category, trivia_questions)
             self.clear()
             self.set_status(201)
