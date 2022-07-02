@@ -1,3 +1,18 @@
-from trivia.client.trivia_client import TriviaClient
+import os
 
-trivia_client = TriviaClient()
+from dotenv import load_dotenv
+
+from trivia.client.trivia_client import TriviaClient, TriviaClientImpl, MockTriviaClient
+
+load_dotenv()
+
+
+def create_trivia_client():
+    if os.getenv("ENVIRONMENT") != "test":
+        print("WE ARE IN TEST")
+        return TriviaClientImpl()
+    else:
+        return MockTriviaClient()
+
+
+trivia_client = create_trivia_client()

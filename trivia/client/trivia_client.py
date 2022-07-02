@@ -1,4 +1,6 @@
 import logging.config
+from abc import ABC
+
 import tornado.escape
 
 from tornado import httpclient
@@ -19,7 +21,51 @@ response_codes = {
 logger = logging.getLogger(__name__)
 
 
-class TriviaClient:
+class TriviaClient(ABC):
+    async def start_session(self):
+        pass
+
+    async def reset_session(self):
+        pass
+
+    def stop_session(self):
+        pass
+
+    async def list_categories(self):
+        pass
+
+    async def get_questions(self, category, number_of_questions=10):
+        pass
+
+
+class MockTriviaClient(TriviaClient):
+    def __init__(self):
+        self.__token = None
+
+    async def start_session(self):
+        self.__token = "1"
+
+    async def reset_session(self):
+        if self.__token is None:
+            raise NoActiveSessionError("No active session")
+
+    def stop_session(self):
+        self.__token = None
+
+    async def list_categories(self):
+        return {1: "Entertainment"}
+
+    async def get_questions(self, category, number_of_questions=10):
+        return [
+            {
+                "question": "Which of these games was the earliest known first-person shooter with a known time of publication?",
+                "correct_answer": "Spasim",
+                "incorrect_answers": ["Doom", "Wolfenstein", "Quake"],
+            }
+        ]
+
+
+class TriviaClientImpl(TriviaClient):
     def __init__(self):
         self.__token = None
         self.__client = httpclient.AsyncHTTPClient()

@@ -53,7 +53,9 @@ class TriviaCategoriesHandler(tornado.web.RequestHandler):
 class TriviaQuestionsHandler(tornado.web.RequestHandler):
     async def post(self):
         if "amount" in self.request.arguments:
-            number_of_questions = int(self.request.arguments["amount"][0].decode("utf-8"))
+            number_of_questions = int(
+                self.request.arguments["amount"][0].decode("utf-8")
+            )
         else:
             number_of_questions = 10
         categories = [cat.decode("utf-8") for cat in self.request.arguments["category"]]
@@ -69,7 +71,9 @@ class TriviaQuestionsHandler(tornado.web.RequestHandler):
                 )
             )
             for category in categories:
-                questions = await trivia_client.get_questions(category, number_of_questions)
+                questions = await trivia_client.get_questions(
+                    category, number_of_questions
+                )
                 trivia_questions = [TriviaQuestion(question) for question in questions]
                 await transifex_service.upsert_data(category, trivia_questions)
                 self.clear()

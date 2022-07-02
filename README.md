@@ -43,3 +43,5 @@ A required path parameter is `category` that is the id of the category the user 
 By specifying the optional path parameter `amount` the user can control how many questions will be fetched for each category.
 
 After that, the app will first check if there is a resource in Transifex for each category. If there is one, it will updated to include the new questions. If not, a new resource will be created and the data will be added.
+
+Since Transifex's API is asynchronous, this API assumes that each request to upload data will be completed successfully and no check if failed or not occurs.

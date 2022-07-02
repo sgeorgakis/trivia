@@ -1,5 +1,6 @@
 import logging.config
 import os
+from abc import ABC
 
 import tornado.escape
 from dotenv import load_dotenv
@@ -17,7 +18,32 @@ API_JSON_CONTENT_TYPE = "application/vnd.api+json"
 logger = logging.getLogger(__name__)
 
 
-class TransifexClient:
+class TransifexClient(ABC):
+    async def list_resources(self):
+        pass
+
+    async def create_resource(self, resource):
+        pass
+
+    async def create_resource(self, resource):
+        pass
+
+    async def upload_new_file(self, data):
+        pass
+
+
+class MockTransifexClient(TransifexClient):
+    async def list_resources(self):
+        return {"1": "resource1"}
+
+    async def create_resource(self, resource):
+        return "id"
+
+    async def upload_new_file(self, data):
+        pass
+
+
+class TransifexClientImpl(TransifexClient):
     def __init__(self):
         self.__client = httpclient.AsyncHTTPClient()
 
