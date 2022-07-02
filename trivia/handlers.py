@@ -5,6 +5,7 @@ import traceback
 
 import tornado.web
 
+from transifex import transifex_service
 from trivia.client import trivia_client
 from trivia.client.models import NoActiveSessionError
 
@@ -49,9 +50,16 @@ class TriviaCategoriesHandler(tornado.web.RequestHandler):
 
 
 class TriviaQuestionsHandler(tornado.web.RequestHandler):
-    async def get(self):
+    async def post(self):
+        number_of_questions = int(self.request.arguments["amount"][0].decode("utf-8"))
+        categories = [cat.decode("utf-8") for cat in self.request.arguments["category"]]
         logger.debug(
-            "Got request for getting questions. Amount: {}, Categories: {}".format(
-                self.request.arguments["amount"], self.request.arguments["category"]
+            "Got request for fetching and uploading questions. Amount: {}, Categories: {}".format(
+                number_of_questions, categories
             )
         )
+        for category in categories:
+            questions = await trivia_client.get_questions(category, number_of_questions)
+            await transifex_service.upsert_data(category, questions)
+            self.clear()
+            self.set_status(201)

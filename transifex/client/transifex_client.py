@@ -10,31 +10,84 @@ from tornado.httpclient import HTTPError
 load_dotenv()
 
 API_KEY = os.getenv("TRANSIFEX_API_KEY")
-API_PATH = "http://transifex.com"
+API_PATH = "https://rest.api.transifex.com"
+PROJECT_ID = os.getenv("TRANSIFEX_PROJECT_ID")
+API_JSON_CONTENT_TYPE = "application/vnd.api+json"
 
 logger = logging.getLogger(__name__)
 
 
 class TransifexClient:
     def __init__(self):
-        self.__token = None
         self.__client = httpclient.AsyncHTTPClient()
 
-    async def start_session(self):
+    async def list_resources(self):
         try:
+            path = "{}/resources?filter[project]={}".format(API_PATH, PROJECT_ID)
+            logger.debug("Path for list resources request {}".format(path))
             request = httpclient.HTTPRequest(
-                "{}/api_token.php?command=request".format(API_PATH), method="GET"
+                path, method="GET", headers=self.__set_authorization_header()
             )
             response = await self.__client.fetch(request)
             response_json = tornado.escape.json_decode(response.body)
         except HTTPError as e:
             logger.error(
-                "Error while requesting token from trivia API. Code: {}, message: {}".format(
-                    e.status_code,
-                    e.message,
+                "Error while requesting list resources from Transifex API. Code: {}, message: {}".format(
+                    e.code, tornado.escape.json_decode(e.response.body)
                 )
             )
             raise e
-        self.__check_response_code(response_json)
-        self.__token = response_json["token"]
-        logger.debug("Got new session token: {}".format(self.__token))
+        response_dictionary = {}
+        for element in response_json["data"]:
+            response_dictionary[element["attributes"]["name"]] = element["id"]
+        return response_dictionary
+
+    async def create_resource(self, resource):
+        try:
+            headers = self.__set_authorization_header()
+            headers["Content-Type"] = API_JSON_CONTENT_TYPE
+            logger.debug("New Resource: {}".format(resource.to_json()))
+            request = httpclient.HTTPRequest(
+                "{}/resources".format(API_PATH),
+                method="POST",
+                headers=headers,
+                body=resource.to_json(),
+            )
+            response = await self.__client.fetch(request)
+            response_json = tornado.escape.json_decode(response.body)
+        except HTTPError as e:
+            logger.error(
+                "Error while requesting list resources from Transifex API. Code {}:, message: {}".format(
+                    e.code, tornado.escape.json_decode(e.response.body)
+                )
+            )
+            raise e
+        return response_json["data"]["id"]
+
+    async def upload_new_file(self, data):
+        try:
+            logger.debug("Uploading new file. Body: {}".format(data.to_json()))
+            headers = self.__set_authorization_header()
+            headers["Content-Type"] = API_JSON_CONTENT_TYPE
+            request = httpclient.HTTPRequest(
+                "{}/resource_strings_async_uploads".format(API_PATH),
+                method="POST",
+                headers=headers,
+                body=data.to_json(),
+            )
+            response = await self.__client.fetch(request)
+        except HTTPError as e:
+            logger.error(
+                "Error while requesting list resources from Transifex API. Code: {}, message: {}".format(
+                    e.code, tornado.escape.json_decode(e.response.body)
+                )
+            )
+            raise e
+        logger.debug(
+            "Response code: {}, Response body: {}".format(
+                response.code, tornado.escape.json_decode(response.body)
+            )
+        )
+
+    def __set_authorization_header(self):
+        return {"Authorization": "Bearer {}".format(API_KEY)}

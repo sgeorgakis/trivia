@@ -34,8 +34,7 @@ class TriviaClient:
         except HTTPError as e:
             logger.error(
                 "Error while requesting token from trivia API. Code: {}, message: {}".format(
-                    e.status_code,
-                    e.message,
+                    e.code, tornado.escape.json_decode(e.response.body)
                 )
             )
             raise e
@@ -57,7 +56,7 @@ class TriviaClient:
             response_json = tornado.escape.json_decode(response.body)
         except HTTPError as e:
             "Error while reseting token from trivia API. Code: {}, message: {}".format(
-                e.status_code, e.text
+                e.code, e.text
             )
             raise e
         self.__check_response_code(response_json)
@@ -77,7 +76,7 @@ class TriviaClient:
         except HTTPError as e:
             logger.error(
                 "Error while requesting categories from trivia API. Code: {}, message: {}".format(
-                    e.status_code, e.text
+                    e.code, tornado.escape.json_decode(e.response.body)
                 )
             )
             raise e
@@ -86,7 +85,7 @@ class TriviaClient:
     async def get_questions(self, category, number_of_questions=10):
         path = "{}/api.php?".format(API_PATH)
         if self.__token is not None:
-            path = path + "token={}".format(self.__token)
+            path = path + "token={}&".format(self.__token)
         try:
             request = httpclient.HTTPRequest(
                 "{}amount={}&category={}".format(path, number_of_questions, category),
@@ -97,11 +96,12 @@ class TriviaClient:
         except HTTPError as e:
             logger.error(
                 "Error while requesting categories from trivia API. Code: {}, message: {}".format(
-                    e.status_code, e.text
+                    e.code, tornado.escape.json_decode(e.response.body)
                 )
             )
             raise e
-        return response_json["trivia_categories"]
+        logger.debug("Response for get questions: {}".format(response_json))
+        return response_json["results"]
 
     def __check_response_code(self, response_json):
         response_code = response_json["response_code"]
