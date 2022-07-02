@@ -55,7 +55,10 @@ def make_dev_server(paths):
     return app
 
 
-if __name__ == "__main__":
+def start_http_server():
     make_http_server(is_from_tests=False)
     __logger.info("Starting IOLoop...")
     IOLoop.current().start()
+
+if __name__ == "__main__":
+    start_http_server()

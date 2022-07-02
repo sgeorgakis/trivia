@@ -52,16 +52,25 @@ class TriviaCategoriesHandler(tornado.web.RequestHandler):
 
 class TriviaQuestionsHandler(tornado.web.RequestHandler):
     async def post(self):
-        number_of_questions = int(self.request.arguments["amount"][0].decode("utf-8"))
+        if "amount" in self.request.arguments:
+            number_of_questions = int(self.request.arguments["amount"][0].decode("utf-8"))
+        else:
+            number_of_questions = 10
         categories = [cat.decode("utf-8") for cat in self.request.arguments["category"]]
-        logger.debug(
-            "Got request for fetching and uploading questions. Amount: {}, Categories: {}".format(
-                number_of_questions, categories
+        if len(categories) == 0:
+            self.write(json.dumps({"message": "Missing path parameter category"}))
+            self.set_status(400)
+            self.clear_header("Content-Type")
+            self.add_header("Content-Type", "application/json")
+        else:
+            logger.debug(
+                "Got request for fetching and uploading questions. Amount: {}, Categories: {}".format(
+                    number_of_questions, categories
+                )
             )
-        )
-        for category in categories:
-            questions = await trivia_client.get_questions(category, number_of_questions)
-            trivia_questions = [TriviaQuestion(question) for question in questions]
-            await transifex_service.upsert_data(category, trivia_questions)
-            self.clear()
-            self.set_status(201)
+            for category in categories:
+                questions = await trivia_client.get_questions(category, number_of_questions)
+                trivia_questions = [TriviaQuestion(question) for question in questions]
+                await transifex_service.upsert_data(category, trivia_questions)
+                self.clear()
+                self.set_status(201)
