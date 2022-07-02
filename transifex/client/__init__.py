@@ -11,7 +11,7 @@ def create_transifex_client():
     if os.getenv("ENVIRONMENT") != "test":
         return TransifexClientImpl()
     else:
-        return MockTransifexClient
+        return MockTransifexClient()
 
 
 transifex_client = create_transifex_client()

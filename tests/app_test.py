@@ -1,4 +1,3 @@
-import os
 
 from tornado.escape import json_decode
 from tornado.testing import AsyncHTTPTestCase
@@ -7,7 +6,6 @@ import server
 
 
 class TestTornadoServer(AsyncHTTPTestCase):
-    os.environ["ENVIRONMENT"] = "test"
 
     def get_app(self):
         return server.make_http_server(is_from_tests=True)

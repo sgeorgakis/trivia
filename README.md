@@ -42,6 +42,7 @@ For requesting questions from Trivia's API, the user has to make a `POST` reques
 A required path parameter is `category` that is the id of the category the user wants to fetch questions. The user can include as many categories as he/she wants.<br>
 By specifying the optional path parameter `amount` the user can control how many questions will be fetched for each category.
 
-After that, the app will first check if there is a resource in Transifex for each category. If there is one, it will updated to include the new questions. If not, a new resource will be created and the data will be added.
+After that, the app will first check if there is a resource in Transifex for each category.<br>
+If there is one, it will fetch all the uploaded questions, delete the resource and recreate it including all the old and new questions.
 
 Since Transifex's API is asynchronous, this API assumes that each request to upload data will be completed successfully and no check if failed or not occurs.

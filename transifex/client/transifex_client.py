@@ -47,6 +47,18 @@ class TransifexClientImpl(TransifexClient):
     def __init__(self):
         self.__client = httpclient.AsyncHTTPClient()
 
+    async def delete_resource(self, resource_id):
+        try:
+            request = httpclient.HTTPRequest("{}/resources/{}".format(API_PATH, resource_id), method="DELETE", headers=self.__set_authorization_header())
+            response = await self.__client.fetch(request)
+        except HTTPError as e:
+            logger.error(
+                "Error while deleting resource {} from Transifex API. Code: {}, message: {}".format(
+                    resource_id, e.code, tornado.escape.json_decode(e.response.body)
+                )
+            )
+            raise e
+
     async def list_resources(self):
         try:
             path = "{}/resources?filter[project]={}".format(API_PATH, PROJECT_ID)
@@ -114,6 +126,44 @@ class TransifexClientImpl(TransifexClient):
                 response.code, tornado.escape.json_decode(response.body)
             )
         )
+
+    async def get_resource_strings(self, resource_id):
+        try:
+            request = httpclient.HTTPRequest(
+                "{}/resource_strings?filter[resource]={}".format(API_PATH, resource_id),
+                method="GET",
+                headers=self.__set_authorization_header()
+            )
+            response = await self.__client.fetch(request)
+            response_json = tornado.escape.json_decode(response.body)
+        except HTTPError as e:
+            logger.error(
+                "Error while requesting list resource strings from Transifex API. Code: {}, message: {}".format(
+                    e.code, tornado.escape.json_decode(e.response.body)
+                )
+            )
+            raise e
+        return response_json["data"], response_json["links"]["next"]
+
+    async def get_cursor_resource_strings(self, path):
+        try:
+            request = httpclient.HTTPRequest(
+                path,
+                method="GET",
+                headers=self.__set_authorization_header()
+            )
+            response = await self.__client.fetch(request)
+            response_json = tornado.escape.json_decode(response.body)
+        except HTTPError as e:
+            logger.error(
+                "Error while requesting list resource strings from Transifex API. Code: {}, message: {}".format(
+                    e.code, tornado.escape.json_decode(e.response.body)
+                )
+            )
+            raise e
+        return response_json["data"], response_json["links"]["next"]
+
+
 
     def __set_authorization_header(self):
         return {"Authorization": "Bearer {}".format(API_KEY)}

@@ -9,7 +9,6 @@ load_dotenv()
 
 def create_trivia_client():
     if os.getenv("ENVIRONMENT") != "test":
-        print("WE ARE IN TEST")
         return TriviaClientImpl()
     else:
         return MockTriviaClient()
