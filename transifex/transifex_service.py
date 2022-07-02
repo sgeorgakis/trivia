@@ -16,7 +16,10 @@ async def __upsert_resource(category):
         previous_resource_strings = await __fetch_resource_strings(resources[category])
         await transifex_client.delete_resource(resources[category])
     new_resource = Resource(name=category, slug=category, project_id=PROJECT_ID)
-    return await transifex_client.create_resource(new_resource), previous_resource_strings
+    return (
+        await transifex_client.create_resource(new_resource),
+        previous_resource_strings,
+    )
 
 
 async def upsert_data(category, trivia_questions):
@@ -57,7 +60,10 @@ async def __get_cursor_resource_strings(path):
     if path is None:
         return {}
     else:
-        resource_strings, next_path = await transifex_client.get_cursor_resource_strings(path)
+        (
+            resource_strings,
+            next_path,
+        ) = await transifex_client.get_cursor_resource_strings(path)
         transformed_resource_strings = __transform_resource_strings(resource_strings)
         next_resource_strings = await __get_cursor_resource_strings(next_path)
         transformed_resource_strings.update(next_resource_strings)

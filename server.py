@@ -6,7 +6,8 @@ import tornado.web
 from healthcheck import HealthCheck, TornadoHandler
 from tornado.ioloop import IOLoop
 
-from trivia.handlers import *
+from trivia.handlers import TriviaSessionStartHandler, TriviaSessionResetHandler, TriviaSessionStopHandler, \
+    TriviaCategoriesHandler, TriviaQuestionsHandler
 
 MAX_BUFFER_SIZE = 200 * 1024 * 1024  # 200MB
 PORT = 8888
