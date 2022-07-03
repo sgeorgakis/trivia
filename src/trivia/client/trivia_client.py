@@ -6,7 +6,7 @@ import tornado.escape
 from tornado import httpclient
 from tornado.httpclient import HTTPError
 
-from trivia.client.models import NoActiveSessionError
+from src.trivia.client.models import NoActiveSessionError
 
 API_PATH = "https://opentdb.com"
 

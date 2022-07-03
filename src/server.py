@@ -6,15 +6,15 @@ import tornado.web
 from healthcheck import HealthCheck, TornadoHandler
 from tornado.ioloop import IOLoop
 
-from transifex.client.transifex_client import MockTransifexClient, TransifexClientImpl
-from transifex.transifex_service import TransifexService
-from trivia.client.trivia_client import TriviaClientImpl, MockTriviaClient
-from handlers import (
+from .transifex.client.transifex_client import MockTransifexClient, TransifexClientImpl
+from .transifex.transifex_service import TransifexService
+from .trivia.client.trivia_client import TriviaClientImpl, MockTriviaClient
+from .handlers import (
     TriviaSessionStartHandler,
     TriviaSessionResetHandler,
     TriviaSessionStopHandler,
     TriviaCategoriesHandler,
-    TriviaQuestionsHandler,
+    UpsertQuestionsHandler,
 )
 
 MAX_BUFFER_SIZE = 200 * 1024 * 1024  # 200MB
@@ -60,7 +60,7 @@ def make_http_server(is_from_tests: bool):
         (r"/categories", TriviaCategoriesHandler, dict(trivia_client=trivia_client)),
         (
             r"/questions",
-            TriviaQuestionsHandler,
+            UpsertQuestionsHandler,
             dict(trivia_client=trivia_client, transifex_service=transifex_service),
         ),
     ]

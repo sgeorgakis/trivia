@@ -127,7 +127,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 name = "platformdirs"
 version = "2.5.2"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -297,7 +297,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "de9288cffcad8be914ee06e884c92b65135acd3f83a0f5e6351d416680b509a0"
+content-hash = "d8f034d994e03cbfdc3c28d41b4ce0847d21104f1ef3e1446602facab6a9167f"
 
 [metadata.files]
 atomicwrites = [

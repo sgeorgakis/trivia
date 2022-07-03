@@ -3,7 +3,7 @@ FROM python:3.9.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV ENVIRONMENT=dev
-ENV POETRY_VERSION=1.1.11
+ENV POETRY_VERSION=1.1.13
 ENV TRANSIFEX_API_KEY=1
 ENV TRANSIFEX_PROJECT_ID=1
 
@@ -17,4 +17,4 @@ RUN poetry config virtualenvs.create false \
 
 EXPOSE 8888
 
-CMD ["python", "server.py"]
+CMD ["poetry", "run", "http_server"]

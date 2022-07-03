@@ -2,8 +2,8 @@ import unittest
 
 import pytest
 
-from transifex.client.transifex_client import MockTransifexClient
-from transifex.transifex_service import TransifexService
+from src.transifex.client.transifex_client import MockTransifexClient
+from src.transifex.transifex_service import TransifexService
 
 
 class TestTransifexService(unittest.TestCase):
@@ -12,6 +12,6 @@ class TestTransifexService(unittest.TestCase):
         client = MockTransifexClient()
         service = TransifexService(client)
         resource_id, data = await service.upsert_resource("1")
-        self.assert_(isinstance(data, dict))
-        self.assert_("question" in data)
-        self.assert_("question2" in data)
+        self.assertTrue(isinstance(data, dict))
+        self.assertTrue("question" in data)
+        self.assertTrue("question2" in data)

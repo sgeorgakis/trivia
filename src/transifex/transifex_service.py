@@ -1,8 +1,8 @@
 import json
 import logging
 
-from transifex.client.transifex_client import PROJECT_ID
-from transifex.models import Resource, ResourceString
+from src.transifex.client.transifex_client import PROJECT_ID
+from src.transifex.models import Resource, ResourceString
 
 logger = logging.getLogger(__name__)
 

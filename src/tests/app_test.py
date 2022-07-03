@@ -1,7 +1,7 @@
 from tornado.escape import json_decode
 from tornado.testing import AsyncHTTPTestCase
 
-import server
+from src import server
 
 
 class TestTornadoServer(AsyncHTTPTestCase):
@@ -33,11 +33,11 @@ class TestTornadoServer(AsyncHTTPTestCase):
     def test_get_categories(self):
         response = self.fetch("/categories")
         self.assertEqual(response.code, 200)
-        self.assert_(isinstance(json_decode(response.body), list))
+        self.assertTrue(isinstance(json_decode(response.body), list))
 
     def test_insert_categories(self):
         response = self.fetch(
-            "question?amount=10&category=9&category=10",
+            "/questions?amount=10&category=9&category=10",
             method="POST",
             allow_nonstandard_methods=True,
         )

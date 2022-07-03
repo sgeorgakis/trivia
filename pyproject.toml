@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "trivia"
 version = "0.1.0"
-description = "TBD"
+description = "A Web app consuming questions from Trivia and pushing them to Transifex for translations"
 authors = ["Stefanos Georgakis <s_georgakis@hotmail.com>"]
 
 [tool.poetry.dependencies]
@@ -10,6 +10,7 @@ python-dotenv = "0.20.0"
 tornado = "^6.1"
 py-healthcheck = "^1.10.1"
 requests = "^2.28.1"
+platformdirs = "2.5.2"
 
 [tool.poetry.dev-dependencies]
 black = "22.6.0"
@@ -17,7 +18,7 @@ pytest = "^6.2.5"
 pytest-asyncio = "^0.18.3"
 
 [tool.poetry.scripts]
-http_server = "server:start_http_server"
+http_server = "src.server:start_http_server"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -5,8 +5,8 @@ import traceback
 
 import tornado.web
 
-from trivia.client.models import NoActiveSessionError
-from trivia.models import TriviaQuestion
+from .trivia.client.models import NoActiveSessionError
+from .trivia.models import TriviaQuestion
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class TriviaCategoriesHandler(tornado.web.RequestHandler):
         self.add_header("Content-Type", "application/json")
 
 
-class TriviaQuestionsHandler(tornado.web.RequestHandler):
+class UpsertQuestionsHandler(tornado.web.RequestHandler):
     def initialize(self, trivia_client, transifex_service):
         self.__trivia_client = trivia_client
         self.__transifex_service = transifex_service

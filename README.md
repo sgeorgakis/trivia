@@ -14,16 +14,13 @@ For starting the app with multiple threads (production mode) you must also set t
 
 # Run
 
-## Docker run
- You can use Docker to build and deploy this app.
- Build the image using the ``docker build -t transifex/trivia`` command<br>
- and then `docker run -e TRANSIFEX_API_KEY=${TRANSIFEX_API_KEY} -e TRANSIFEX_PROJECT_ID=${TRANSIFEX_PROJECT_ID} transifex/trivia -p 8888:8888` to run it,<br>specifying the required env variables
-
 ## Poetry run
  You can use poetry to run the app using the following commands: `poetry install` to install the required dependencies and `poetry run http_server` to start the server
 
-## Python run
- You can simply use `python3 server.py` to run the app. You must however use `poetry install` before, to install the required dependencies
+## Docker run
+ You can use Docker to build and deploy this app.
+ Build the image using the `docker build . -t transifex/trivia` command<br>
+ and then `docker run -e TRANSIFEX_API_KEY=${TRANSIFEX_API_KEY} -e TRANSIFEX_PROJECT_ID=${TRANSIFEX_PROJECT_ID} transifex/trivia -p 8888:8888` to run it,<br>specifying the required env variables
 
 # Usage
 
@@ -39,13 +36,14 @@ The first step is to retrieve the categories from Trivia using a `GET` request t
 This will return a json encoded response with the categories ids and descriptions.
 
 For requesting questions from Trivia's API, the user has to make a `POST` request using the `/questions` path.<br>
-A required path parameter is `category` that is the id of the category the user wants to fetch questions. The user can include as many categories as he/she wants.<br>
+A required path parameter is `category` that is the id of the category the user wants to fetch questions. The user can include as many categories as he/she wants in the request.<br>
 By specifying the optional path parameter `amount` the user can control how many questions will be fetched for each category.
 
 After that, the app will first check if there is a resource in Transifex for each category.<br>
-If there is one, it will fetch all the uploaded questions, delete the resource and recreate it including all the old and new questions.
+If there is one, it will fetch all the uploaded resource strings, delete the resource and recreate it including all the old and new questions.<br>
+A successful request will result in a `202` status code.
 
-Since Transifex's API is asynchronous, this API assumes that each request to upload data will be completed successfully and no check if failed or not occurs.
+Since Transifex's API is asynchronous, this API assumes that each request to upload data will be completed successfully and no check of the progress occurs.
 
 # Notes
 
@@ -54,9 +52,3 @@ Transifex's API did not work as expected. According to the specs of the task, up
 I noticed, though, that the resource was left untouched. This is the reason I decided to fetch all the previous inserted resource strings, delete the resource and recreate it.<br>
 
 As the number of resource strings is growing, so will the payload and we can probably end up with a `413` status code.
-
-## Issues
-Although there are tests included, the ones testing the server do not work. There is an error not allowing the `app_test` file to see the `trivia.client` module.<br>
-I managed to fix it by moving every python file under a common folder and using relative paths, but then errors at startup occurred.
-Although the tests are crucial in an application, I decided to deliver a running app with limited tests and some broken rather than the opposite.<br>
-`transifex_service_test` includes only one test, but it covers most of the code in the respective class and the scenario where the resource already exists and need to be updated, so it seemed redundant to add another.
